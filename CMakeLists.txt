@@ -6,9 +6,12 @@ project (PCL_HEAD_DIFFUSION)
 find_package (PCL REQUIRED)
 include_directories (${PCL_INCLUDE_DIRS})
 
+find_package (Eigen REQUIRED)
+include_directories (${Eigen_INCLUDE_DIRS})
+
 include_directories (include)
 
 add_definitions (-std=c++0x)
 
 add_executable (heat src/main.cpp)
-target_link_libraries (heat ${PCL_LIBRARIES})
+target_link_libraries (heat ${PCL_LIBRARIES} ${Eigen_LIBRARIES})

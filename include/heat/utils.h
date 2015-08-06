@@ -3,25 +3,22 @@
 
 namespace heat {
 
-double min_max_distance(const pcl::PointCloud<pcl::PointXYZ>::Ptr& cloud) {
-    double max = 0.0;
+template <class PointT>
+double avg_distance(
+    const int neighbors,
+    const typename pcl::PointCloud<PointT>::Ptr& cloud,
+    const typename pcl::KdTreeFLANN<PointT>::Ptr& tree) {
 
-    pcl::KdTreeFLANN<pcl::PointXYZ>::Ptr tree(new pcl::KdTreeFLANN<pcl::PointXYZ>());
-    tree->setInputCloud(cloud);
-
+    double avg = 0.0;
     for (const auto& point : cloud->points) {
         std::vector<int> indices;
         std::vector<float> distances;
-        tree->nearestKSearch(point, 3, indices, distances);
+        tree->nearestKSearch(point, neighbors, indices, distances);
 
-        auto max_elem = std::max_element(std::begin(distances), std::end(distances));
-
-        if (max < *max_elem) {
-            max = *max_elem;
-        }
+        avg += std::accumulate(distances.begin(), distances.end(), 0.0) / static_cast<double>(distances.size());
     }
 
-    return max;
+    return avg / static_cast<double>(cloud->size());
 }
 
 } // namespace heat
