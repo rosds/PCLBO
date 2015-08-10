@@ -34,6 +34,8 @@ class HeatDiffusion {
         InputCloudPtr _cloud;
         NormalCloudPtr _normals;
 
+        std::vector<double> B, S;
+        std::vector<int> I, J;
 
 }; // class HeatDiffusion
 

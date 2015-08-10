@@ -2,7 +2,6 @@
 
 heat::VoronoiDiagram::VoronoiDiagram(const std::vector<Eigen::Vector2d>& points) {
     std::vector<double> pt;
-    // double val;
 
     VD vd;
     Point_2* pt2;
