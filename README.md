@@ -25,3 +25,8 @@ simply do the following:
     make
     ./visualize_eigenfunctions
 ```
+
+![Demo](https://raw.githubusercontent.com/alfonsoros88/PCLBO/master/doc/images/heat_diffusion.gif)
+
+There is also a small example for computing the heat kernel signature over 
+time. The executable is called `heat`.

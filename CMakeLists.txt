@@ -41,3 +41,11 @@ target_link_libraries (visualize_eigenfunctions
     ${CGAL_3RD_PARTY_LIBRARIES} 
     ${PCL_LIBRARIES} 
     ${Eigen_LIBRARIES})
+
+add_executable (heat src/heat_demo.cpp)
+target_link_libraries (heat 
+    ${Boost_LIBRARIES}  
+    ${CGAL_LIBRARY} 
+    ${CGAL_3RD_PARTY_LIBRARIES} 
+    ${PCL_LIBRARIES} 
+    ${Eigen_LIBRARIES})
