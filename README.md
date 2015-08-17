@@ -12,7 +12,7 @@ used as part of the [Point Cloud Library](http://pointclouds.org/).
 
 ### Compile and run the demo
 
-![Demo preview](https://raw.githubusercontent.com/alfonsoros88/PCLBO/master/doc/images/eigenfunctions.gif)
+![Demo](https://raw.githubusercontent.com/alfonsoros88/PCLBO/master/doc/images/eigenfunctions.gif)
 
 There is a small demo with the code that visualizes the Eigenfunctions of the 
 Laplace-Beltrami Operator on the Stanford Bunny cloud. To compile and run it 
