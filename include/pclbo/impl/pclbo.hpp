@@ -1,12 +1,12 @@
-#include <heat/heat_diffusion.h>
+#include <pclbo/pclbo.h>
 
 template <class PointT, class NormalT>
-void heat::HeatDiffusion<PointT, NormalT>::computeLBO() {
+void pclbo::LBOEstimation<PointT, NormalT>::compute() {
 
     typename pcl::KdTreeFLANN<PointT>::Ptr kdt(new pcl::KdTreeFLANN<PointT>());
     kdt->setInputCloud(_cloud);
 
-    const double avg_dist = heat::avg_distance<PointT>(10, _cloud, kdt);
+    const double avg_dist = pclbo::avg_distance<PointT>(10, _cloud, kdt);
     const double h = 5 * avg_dist;
 
     std::cout << "Average distance between points: " << avg_dist << std::endl;
@@ -82,7 +82,7 @@ void heat::HeatDiffusion<PointT, NormalT>::computeLBO() {
         avg_mass /= static_cast<double>(points_with_mass);
     }
 
-    // Replace the 0 values with the average mass
+    // Set border points to have average mass
     for (auto& b : B) {
         if (b == 0.0) {
             b = avg_mass; 

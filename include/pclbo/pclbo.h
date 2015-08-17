@@ -1,5 +1,5 @@
-#ifndef HEAT_DIFF_HEAT_DIFFUSION_HH
-#define HEAT_DIFF_HEAT_DIFFUSION_HH
+#ifndef PC_LBO_DIFFUSION_HH
+#define PC_LBO_DIFFUSION_HH
 
 #include <cmath>
 #include <Eigen/Eigen>
@@ -7,22 +7,23 @@
 #include <pcl/common/geometry.h>
 #include <pcl/kdtree/kdtree_flann.h>
 
-#include <heat/utils.h>
-#include <heat/voronoi_diagram.h>
+#include <pclbo/utils.h>
+#include <pclbo/voronoi_diagram.h>
 
 
+namespace pclbo {
 
-namespace heat {
-
+/** \brief Estimates the Laplace-Beltrami Operator for the input cloud.
+ */
 template <class PointT, class NormalT>
-class HeatDiffusion {
+class LBOEstimation {
     public:
         typedef pcl::PointCloud<PointT> InputCloud;
         typedef typename InputCloud::Ptr InputCloudPtr;
         typedef pcl::PointCloud<NormalT> NormalCloud;
         typedef typename NormalCloud::Ptr NormalCloudPtr;
 
-        virtual ~HeatDiffusion () {}
+        virtual ~LBOEstimation () {}
 
         void setInputCloud(const InputCloudPtr& cloud) {
             _cloud = cloud; 
@@ -32,11 +33,8 @@ class HeatDiffusion {
             _normals = normals; 
         }
 
-        void computeLBO();
+        void compute();
     
-        std::vector<double> B, S;
-        std::vector<int> I, J;
-
         Eigen::MatrixXd eigenfunctions;
         Eigen::VectorXd eigenvalues;
 
@@ -44,10 +42,13 @@ class HeatDiffusion {
         InputCloudPtr _cloud;
         NormalCloudPtr _normals;
 
+        // Mass matrix and stiffness matrix
+        std::vector<double> B, S;
+        std::vector<int> I, J;
 }; // class HeatDiffusion
 
 }
 
-#include <heat/impl/heat_diffusion.hpp>
+#include <pclbo/impl/pclbo.hpp>
 
-#endif // HEAT_DIFF_HEAT_DIFFUSION_HH
+#endif // PC_LBO_PC_LBOUSION_HH

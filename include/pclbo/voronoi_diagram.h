@@ -1,5 +1,5 @@
-#ifndef HEAT_DIFF_VORONOI_DIAGRAM_HH
-#define HEAT_DIFF_VORONOI_DIAGRAM_HH
+#ifndef PC_LBO_VORONOI_DIAGRAM_HH
+#define PC_LBO_VORONOI_DIAGRAM_HH
 
 #include <vector>
 #include <Eigen/Core>
@@ -16,7 +16,7 @@
 #include <CGAL/Delaunay_triangulation_adaptation_policies_2.h>
 
 
-namespace heat {
+namespace pclbo {
 
 class VoronoiDiagram {
 public:
@@ -38,6 +38,18 @@ public:
 
     typedef CGAL::Polygon_2<CGAL::Cartesian<double> > Polygon;
 
+    /** \brief Compute the area of the Voronoi Cell corresponding to the first 
+     * point.
+     *
+     *  This function creates a Voronoi diagram from the given points using the 
+     *  CGAL library. Afterwards, it computes the area of the Voronoi Cell 
+     *  that contains the first point in the array when possible.
+     *
+     *  \param[in] points Array of 2D points representing the center of the Voronoi 
+     *  cells.
+     *  \return The area of the Voronoi Cell containing the first point of the 
+     *  array.
+     */
     static double area(const std::vector<Eigen::Vector2d>& points) {
 
         assert(points.size() >= 4);
@@ -76,6 +88,6 @@ public:
     }
 };
 
-} // namespace heat
+} // namespace pclbo
 
-#endif // HEAT_DIFF_VORONOI_DIAGRAM_HH
+#endif // PC_LBO_VORONOI_DIAGRAM_HH

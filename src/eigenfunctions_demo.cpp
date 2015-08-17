@@ -5,10 +5,10 @@
 #include <pcl/kdtree/kdtree_flann.h>
 #include <pcl/features/normal_3d.h>
 #include <pcl/visualization/pcl_visualizer.h>
-#include <pcl/filters/voxel_grid.h>
 
-#include <heat/utils.h>
-#include <heat/heat_diffusion.h>
+#include <pclbo/utils.h>
+#include <pclbo/pclbo.h>
+
 
 float shortRainbowColorMap(const float value, const float min, const float max) {
     uint8_t r, g, b;
@@ -51,6 +51,7 @@ float shortRainbowColorMap(const float value, const float min, const float max) 
     uint32_t rgb = ((uint32_t)r << 16 | (uint32_t)g << 8 | (uint32_t)b);
     return *reinterpret_cast<float*>(&rgb);
 }
+
     
 int main(int argc, char *argv[]) {
 
@@ -63,6 +64,8 @@ int main(int argc, char *argv[]) {
     pcl::search::KdTree<pcl::PointXYZ>::Ptr kdt(new pcl::search::KdTree<pcl::PointXYZ>());
     kdt->setInputCloud(cloud);
 
+    //-------------------------------------------------------------------------
+    // Compute the normals and concatenate them to the points
     pcl::NormalEstimation<pcl::PointXYZ, pcl::Normal> ne;
     ne.setInputCloud(cloud);
     ne.setSearchMethod(kdt);
@@ -72,36 +75,29 @@ int main(int argc, char *argv[]) {
     pcl::PointCloud<pcl::PointNormal>::Ptr cloud_with_normals(new pcl::PointCloud<pcl::PointNormal>());
     pcl::concatenateFields(*cloud, *normals, *cloud_with_normals);
 
-/*
- *    pcl::PointCloud<pcl::PointNormal>::Ptr cloud_filtered(new pcl::PointCloud<pcl::PointNormal>());
- *
- *    pcl::VoxelGrid<pcl::PointNormal> sor;
- *    sor.setInputCloud(cloud_with_normals);
- *    sor.setLeafSize(0.03f, 0.03f, 0.03f);
- *    sor.filter(*cloud_filtered);
- */
+    //-------------------------------------------------------------------------
+    // Compute the LBO
+    pclbo::LBOEstimation<pcl::PointNormal, pcl::PointNormal> lbo;
+    lbo.setInputCloud(cloud_with_normals);
+    lbo.setCloudNormals(cloud_with_normals);
+    lbo.compute();
 
-    pcl::PointCloud<pcl::PointNormal>::Ptr cloud_filtered = cloud_with_normals;
-
-    heat::HeatDiffusion<pcl::PointNormal, pcl::PointNormal> hd;
-    hd.setInputCloud(cloud_filtered);
-    hd.setCloudNormals(cloud_filtered);
-    hd.computeLBO();
-
+    //-------------------------------------------------------------------------
+    // Visualize the Eigenfunctions of the LBO
     pcl::visualization::PCLVisualizer::Ptr viewer(new pcl::visualization::PCLVisualizer());
     pcl::PointCloud<pcl::PointXYZRGB>::Ptr colored_cloud(new pcl::PointCloud<pcl::PointXYZRGB>());
 
-    for (int f = 0; f < hd.eigenvalues.size(); f++) {
+    for (int f = 0; f < lbo.eigenvalues.size(); f++) {
 
-        Eigen::VectorXd v = hd.eigenfunctions.col(f);
+        Eigen::VectorXd v = lbo.eigenfunctions.col(f);
 
         // Search for the minimum and maximum curvature
         float min = v.minCoeff();
         float max = v.maxCoeff();
 
         colored_cloud->clear();
-        for (int i = 0; i < cloud_filtered->size(); i++) {
-            const auto& point = cloud_filtered->at(i);
+        for (int i = 0; i < cloud_with_normals->size(); i++) {
+            const auto& point = cloud_with_normals->at(i);
 
             if (pcl::isFinite(point)) {
                 pcl::PointXYZRGB p;

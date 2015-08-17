@@ -1,10 +1,17 @@
-#ifndef HEAT_DIFF_UTILS_HH
-#define HEAT_DIFF_UTILS_HH
+#ifndef PC_LBO_UTILS_HH
+#define PC_LBO_UTILS_HH
 
 #include <pcl/common/geometry.h>
 
-namespace heat {
+namespace pclbo {
 
+/** \brief Compute the average distance between each point and its neighbors.
+ *  \param[in] neighbors The number of neighbors to consider in the calculation 
+ *  of the distances.
+ *  \param[in] cloud Pointer to the cloud with the points.
+ *  \param[in] tree KdTree used to compute the radius search.
+ *  \return The average distance between the points and its neighbors.
+ */
 template <class PointT>
 double avg_distance(
     const int neighbors,
@@ -48,6 +55,14 @@ double avg_distance(
 }
 
 
+/** \brief Projects the given points to a plane.
+ *
+ *  \param[in] origin Point in the plane.
+ *  \param[in] normal Normal of the plane.
+ *  \param[in] point The point to project to the plane.
+ *  \return A 3D vector corresponding to the position of the point projected 
+ *  onto the plane.
+ */
 template <class PointT, class NormalT>
 Eigen::Vector3d 
 project(const PointT& origin, const NormalT& normal, const PointT& point) {
@@ -61,6 +76,6 @@ project(const PointT& origin, const NormalT& normal, const PointT& point) {
     return p.cast<double>() - projection * n.cast<double>();
 }
 
-} // namespace heat
+} // namespace pclbo
 
-#endif // HEAT_DIFF_UTILS_HH
+#endif // PC_LBO_UTILS_HH
