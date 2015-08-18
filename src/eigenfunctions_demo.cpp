@@ -6,7 +6,6 @@
 #include <pcl/features/normal_3d.h>
 #include <pcl/visualization/pcl_visualizer.h>
 
-#include <pclbo/utils.h>
 #include <pclbo/pclbo.h>
 
 
@@ -77,19 +76,21 @@ int main(int argc, char *argv[]) {
 
     //-------------------------------------------------------------------------
     // Compute the LBO
-    pclbo::LBOEstimation<pcl::PointNormal, pcl::PointNormal> lbo;
-    lbo.setInputCloud(cloud_with_normals);
-    lbo.setCloudNormals(cloud_with_normals);
-    lbo.compute();
+    pclbo::LBOEstimation<pcl::PointNormal, pcl::PointNormal>::Ptr 
+    lbo(new pclbo::LBOEstimation<pcl::PointNormal, pcl::PointNormal>());
+
+    lbo->setInputCloud(cloud_with_normals);
+    lbo->setCloudNormals(cloud_with_normals);
+    lbo->compute();
 
     //-------------------------------------------------------------------------
     // Visualize the Eigenfunctions of the LBO
     pcl::visualization::PCLVisualizer::Ptr viewer(new pcl::visualization::PCLVisualizer());
     pcl::PointCloud<pcl::PointXYZRGB>::Ptr colored_cloud(new pcl::PointCloud<pcl::PointXYZRGB>());
 
-    for (int f = 0; f < lbo.eigenvalues.size(); f++) {
+    for (int f = 0; f < lbo->eigenvalues.size(); f++) {
 
-        Eigen::VectorXd v = lbo.eigenfunctions.col(f);
+        Eigen::VectorXd v = lbo->eigenfunctions.col(f);
 
         // Search for the minimum and maximum curvature
         float min = v.minCoeff();

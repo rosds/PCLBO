@@ -23,6 +23,8 @@ class LBOEstimation {
         typedef pcl::PointCloud<NormalT> NormalCloud;
         typedef typename NormalCloud::Ptr NormalCloudPtr;
 
+        typedef std::shared_ptr<LBOEstimation<PointT, NormalT> > Ptr;
+
         virtual ~LBOEstimation () {}
 
         void setInputCloud(const InputCloudPtr& cloud) {

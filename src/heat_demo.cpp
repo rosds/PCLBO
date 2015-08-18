@@ -6,8 +6,12 @@
 #include <pcl/features/normal_3d.h>
 #include <pcl/visualization/pcl_visualizer.h>
 
+// Laplace-Beltrami Operator
 #include <pclbo/utils.h>
 #include <pclbo/pclbo.h>
+
+// HeatKernelSignature
+#include <heat/heat.h>
 
 
 float shortRainbowColorMap(const float value, const float min, const float max) {
@@ -77,41 +81,33 @@ int main(int argc, char *argv[]) {
 
     //-------------------------------------------------------------------------
     // Compute the LBO
-    pclbo::LBOEstimation<pcl::PointNormal, pcl::PointNormal> lbo;
-    lbo.setInputCloud(cloud_with_normals);
-    lbo.setCloudNormals(cloud_with_normals);
-    lbo.compute();
+    pclbo::LBOEstimation<pcl::PointNormal, pcl::PointNormal>::Ptr
+    lbo(new pclbo::LBOEstimation<pcl::PointNormal, pcl::PointNormal>());
+
+    lbo->setInputCloud(cloud_with_normals);
+    lbo->setCloudNormals(cloud_with_normals);
+    lbo->compute();
 
     //-------------------------------------------------------------------------
-    // Compute and visualize the heat diffusion from vertex 591
+    // Set the HeatKernelSignature
+    heat::HeatKernelSignature<pcl::PointNormal>::Ptr hks(new heat::HeatKernelSignature<pcl::PointNormal>());
+    hks->setInputCloud(cloud_with_normals);
+    hks->setEigenValues(lbo->eigenvalues);
+    hks->setEigenFunctions(lbo->eigenfunctions);
+
+    //-------------------------------------------------------------------------
+    // Compute and visualize the heat diffusion from vertex 1591
     pcl::visualization::PCLVisualizer::Ptr viewer(new pcl::visualization::PCLVisualizer());
     pcl::PointCloud<pcl::PointXYZRGB>::Ptr colored_cloud(new pcl::PointCloud<pcl::PointXYZRGB>());
     
+    const int x = 1591;             // Some vertex id
+    const double t_step = 3.53917;       // time step
 
-    pcl::KdTreeFLANN<pcl::PointXYZ>::Ptr kdt2(new pcl::KdTreeFLANN<pcl::PointXYZ>());
-    kdt2->setInputCloud(cloud);
-    double avg_dist = pclbo::avg_distance<pcl::PointXYZ>(10, cloud, kdt2);
-    double t = 100000 * avg_dist * avg_dist;
+    for (double t = t_step; true; t += t_step) {
 
-    const auto x = 1591;
-    std::vector<double> heat(cloud->size(), 0.0);
+        auto hs = hks->compute(x, t);
 
-    for (double t_step = t; true; t_step += t) {
-        for (int y = 0; y < cloud->size(); y++) {
-
-            double sum = 0.0;
-            for (int j = 0; j < 200; j++) {
-                double lambda = lbo.eigenvalues(j);
-                Eigen::VectorXd psi = lbo.eigenfunctions.col(j);
-                sum += exp(-lambda * t_step) * psi(x) * psi(y); 
-            }
-
-            heat[y] = sum;
-        }
-
-        std::cout << "t_step " << t_step << std::endl;
-
-        auto range = std::minmax_element(heat.begin(), heat.end());
+        auto range = std::minmax_element(hs->begin(), hs->end());
 
         // Display the heat
         colored_cloud->clear();
@@ -123,7 +119,7 @@ int main(int argc, char *argv[]) {
                 p.x = point.x;
                 p.y = point.y;
                 p.z = point.z;
-                p.rgb = shortRainbowColorMap(heat[i], *(range.first), *(range.second));
+                p.rgb = shortRainbowColorMap(hs->at(i), *(range.first), *(range.second));
 
                 colored_cloud->push_back(p);
             }
