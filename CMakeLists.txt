@@ -49,3 +49,11 @@ target_link_libraries (heat
     ${CGAL_3RD_PARTY_LIBRARIES} 
     ${PCL_LIBRARIES} 
     ${Eigen_LIBRARIES})
+
+add_executable (geoheat src/geoheat_demo.cpp)
+target_link_libraries (geoheat 
+    ${Boost_LIBRARIES}  
+    ${CGAL_LIBRARY} 
+    ${CGAL_3RD_PARTY_LIBRARIES} 
+    ${PCL_LIBRARIES} 
+    ${Eigen_LIBRARIES})
