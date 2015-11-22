@@ -17,6 +17,8 @@ namespace pclbo {
  */
 class MeshGeoHeat {
     public:
+        typedef std::shared_ptr<MeshGeoHeat> Ptr;
+
         /** \brief Empty constructor. */
         MeshGeoHeat () : input_mesh_() {}
 
