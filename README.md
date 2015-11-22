@@ -10,7 +10,9 @@ used as part of the [Point Cloud Library](http://pointclouds.org/).
 + Eigen library 3.0
 + CGAL 3.9
 
-### Compile and run the demo
+### Demos
+
+#### Computing the eigenfunctions of the Laplacian
 
 ![Demo](https://raw.githubusercontent.com/alfonsoros88/PCLBO/master/doc/images/eigenfunctions.gif)
 
@@ -26,7 +28,27 @@ simply do the following:
     ./visualize_eigenfunctions
 ```
 
-![Demo](https://raw.githubusercontent.com/alfonsoros88/PCLBO/master/doc/images/heat_diffusion.gif)
+#### Heat diffusion
 
 There is also a small example for computing the heat kernel signature over 
 time. The executable is called `heat`.
+
+![Demo](https://raw.githubusercontent.com/alfonsoros88/PCLBO/master/doc/images/heat_diffusion.gif)
+
+#### Compute the geodesic functions
+
+This one is pretty cool. This is an implementation of the geodesics in heat 
+method from ![Crane](http://www.cs.columbia.edu/~keenan/Projects/GeodesicsInHeat/index.html). This one
+has a point picking event so you can click a point in the viewer and display 
+the geodesics coming out from that point.
+
+![Demo](https://raw.githubusercontent.com/alfonsoros88/PCLBO/master/doc/images/geodesics.gif)
+
+```bash
+    mkdir build
+    cd build
+    cmake ..
+    make
+    ./mesh_geoheat -m ../models/bunny.ply
+```
+
