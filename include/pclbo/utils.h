@@ -76,16 +76,6 @@ project(const PointT& origin, const NormalT& normal, const PointT& point) {
     return p.cast<double>() - projection * n.cast<double>();
 }
 
-/** \brief Computes the angle between two vectors
- *  \param[in] a A vector.
- *  \param[in] b B vector.
- *  \return The angle between the vectors.
- */
-double angleBetween(const Eigen::Vector3f& a, const Eigen::Vector3f& b) {
-    Eigen::Vector3f c = a.cross(b);
-    return atan2f(c.norm(), a.dot(b));
-}
-
 } // namespace pclbo
 
 #endif // PC_LBO_UTILS_HH

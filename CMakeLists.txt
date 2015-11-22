@@ -35,7 +35,9 @@ add_definitions (-std=c++0x ${CGAL_CXX_FLAGS_INIT})
 # Compile the library                                                        #
 ##############################################################################
 
-set (lbo_src "src/meshlbo.cpp")
+set (lbo_src 
+    "src/meshlbo.cpp"
+    "src/meshgeoheat.cpp")
 add_library (pclbo SHARED ${lbo_src})
 
 ##############################################################################

@@ -1,6 +1,7 @@
 //#include <cmath>
 //#include <map>
 #include <iostream>
+#include <algorithm>
 //#include <fstream>
 
 #include <Eigen/Geometry>
@@ -17,6 +18,7 @@
 #include <boost/filesystem.hpp>
 
 #include <pclbo/meshlbo.h>
+#include <pclbo/geodesics/meshgeoheat.h>
 
 namespace po = boost::program_options;
 namespace fs = boost::filesystem;
@@ -256,98 +258,17 @@ int main(int argc, char *argv[]) {
 
     const size_t N = cloud->size();
 
-    pclbo::MeshLBOEstimation lbo;
-    lbo.setInputMesh(triangles);
-    lbo.compute();
-
-    double dt = sqrt(lbo.avg_edge_length);
-
-    Eigen::SparseMatrix<double> A = lbo.M + dt * lbo.L;
-    //Eigen::MatrixXd A = Eigen::MatrixXd(M + dt * L);
-
-    // Compute the u signature
-    Eigen::VectorXd u0 = Eigen::VectorXd::Zero(N);
-
-    const int x = 500;
-
-    u0(x) = 1.0f;
-
-    // u = A \ u0
-    std::shared_ptr<Eigen::CholmodSupernodalLLT<Eigen::SparseMatrix<double> > > solver(new Eigen::CholmodSupernodalLLT<Eigen::SparseMatrix<double> >());
-    solver->setShift(10e-10);
-    solver->compute(A);
-
-    if (solver->info() != Eigen::Success) {
-      //std::cout  << solver->info() << std::endl;
-    }
-
-    Eigen::VectorXd u = solver->solve(u0);
-
-    //Eigen::VectorXd u = A.fullPivLu().solve(u0);
-
-    Eigen::VectorXd div = Eigen::VectorXd::Zero(N);
-
-    // Compute the vector field X
-    for (int f = 0; f < triangles->polygons.size(); f++) {
-       
-      const auto& triangle = triangles->polygons.at(f);
-
-      const auto i = triangle.vertices[0];
-      const auto j = triangle.vertices[1];
-      const auto k = triangle.vertices[2];
-
-      // Get the vertices of the triangle
-      const auto& p0 = cloud->at(i).getVector3fMap();        
-      const auto& p1 = cloud->at(j).getVector3fMap();        
-      const auto& p2 = cloud->at(k).getVector3fMap();        
-
-      // Compute the face normal
-      const auto& n = (p1 - p0).cross(p2 - p0).normalized();
-
-      const auto& eij = n.cross(p1 - p0);
-      const auto& ejk = n.cross(p2 - p1);
-      const auto& eki = n.cross(p0 - p2);
-
-      const auto& ui = u(i);
-      const auto& uj = u(j);
-      const auto& uk = u(k);
-
-      Eigen::Vector3f x = (ui * ejk + uj * eki + uk * eij) / lbo.area->at(f);
-      x = - x / x.norm();
-
-      div(i) += x.dot(ejk);
-      div(j) += x.dot(eki);
-      div(k) += x.dot(eij);
-    }
-
-    solver->compute(lbo.L);
-    if (solver->info() != Eigen::Success) {
-        std::cout << "laplacian " << solver->info() << std::endl;
-    }
-
-    Eigen::VectorXd phi = solver->solve(div);
-    
-    double minimum = 9999.0;
-    double maximum = -9999.0;
-    for (int i = 0; i < N; i++) {
-      if (phi(i) < minimum) {
-        minimum = phi(i);
-      }
-    }
-
-    std::cout << "min " << minimum << std::endl;
-    std::cout << "max " << maximum << std::endl;
-
-    phi = phi.array() - minimum;
-
-    for (int i = 0; i < N; i++) {
-      if (phi(i) > maximum) {
-        maximum = phi(i);
-      }
-    }
+    pclbo::MeshGeoHeat mgh;
+    mgh.setInputMesh(triangles);
+    mgh.compute();
     
     pcl::PointCloud<pcl::PointXYZRGB>::Ptr color_cloud(new pcl::PointCloud<pcl::PointXYZRGB>());
     color_cloud->points.resize(N);
+
+    int x = 500;
+    std::vector<double> distances = mgh.getDistancesFrom(x);
+
+    double maximum = *std::max_element(distances.begin(), distances.end());
     
     for (int i = 0; i < cloud->size(); i++) {
       const auto& point = cloud->points.at(i);
@@ -356,8 +277,7 @@ int main(int argc, char *argv[]) {
       point_copy.y = point.y;
       point_copy.z = point.z;
 
-      //double color = shortRainbowColorMap(u(i), 0.0, 1.0);
-      float color = shortRainbowColorMap(phi(i), 0.0, maximum);
+      float color = shortRainbowColorMap(distances[i], 0.0, maximum);
 
       point_copy.rgb = color;
     }
