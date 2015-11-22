@@ -35,7 +35,7 @@ time. The executable is called `heat`.
 
 ![Demo](https://raw.githubusercontent.com/alfonsoros88/PCLBO/master/doc/images/heat_diffusion.gif)
 
-#### Compute the geodesic functions
+#### Geodesic distances
 
 This one is pretty cool. This is an implementation of the geodesics in heat 
 method from ![Crane](http://www.cs.columbia.edu/~keenan/Projects/GeodesicsInHeat/index.html). This one
@@ -45,10 +45,6 @@ the geodesics coming out from that point.
 ![Demo](https://raw.githubusercontent.com/alfonsoros88/PCLBO/master/doc/images/geodesics.gif)
 
 ```bash
-    mkdir build
-    cd build
-    cmake ..
-    make
     ./mesh_geoheat -m ../models/bunny.ply
 ```
 
