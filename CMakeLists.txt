@@ -40,6 +40,9 @@ set (lbo_src
     "src/meshgeoheat.cpp")
 add_library (pclbo SHARED ${lbo_src})
 
+install (TARGETS pclbo DESTINATION /usr/local/lib)
+install (DIRECTORY include/pclbo DESTINATION include)
+
 ##############################################################################
 # Compile a demo                                                             #
 ##############################################################################
