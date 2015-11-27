@@ -44,7 +44,7 @@ add_library (pclbo SHARED ${lbo_src})
 # Compile a demo                                                             #
 ##############################################################################
 
-add_executable (visualize_eigenfunctions src/eigenfunctions_demo.cpp)
+add_executable (visualize_eigenfunctions EXCLUDE_FROM_ALL src/eigenfunctions_demo.cpp)
 target_link_libraries (visualize_eigenfunctions 
     ${Boost_LIBRARIES}  
     ${CGAL_LIBRARY} 
@@ -52,7 +52,7 @@ target_link_libraries (visualize_eigenfunctions
     ${PCL_LIBRARIES} 
     ${Eigen3_LIBRARIES})
 
-add_executable (heat src/heat_demo.cpp)
+add_executable (heat EXCLUDE_FROM_ALL src/heat_demo.cpp)
 target_link_libraries (heat 
     ${Boost_LIBRARIES}  
     ${CGAL_LIBRARY} 
@@ -60,17 +60,17 @@ target_link_libraries (heat
     ${PCL_LIBRARIES} 
     ${Eigen3_LIBRARIES})
 
-add_executable (geoheat src/geoheat_demo.cpp)
-target_link_libraries (geoheat 
-    ${Boost_LIBRARIES}  
-    ${CGAL_LIBRARY} 
-    ${CGAL_3RD_PARTY_LIBRARIES} 
-    ${PCL_LIBRARIES} 
-    ${Eigen3_LIBRARIES})
+#add_executable (geoheat src/geoheat_demo.cpp)
+#target_link_libraries (geoheat 
+    #${Boost_LIBRARIES}  
+    #${CGAL_LIBRARY} 
+    #${CGAL_3RD_PARTY_LIBRARIES} 
+    #${PCL_LIBRARIES} 
+    #${Eigen3_LIBRARIES})
 
 
 include_directories ("/usr/include/suitesparse")
-add_executable (mesh_geoheat src/mesh_geoheat_demo.cpp)
+add_executable (mesh_geoheat EXCLUDE_FROM_ALL src/mesh_geoheat_demo.cpp)
 target_link_libraries (mesh_geoheat 
     pclbo
     cholmod

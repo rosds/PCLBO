@@ -130,7 +130,6 @@ int main(int argc, char *argv[]) {
     Eigen::VectorXd gradient_norm = Eigen::VectorXd::Zero(hs->size());
     
     // Invert and normalize the vector field
-    for (auto& point : *X) {
     for (int i = 0; i < X->size(); i++) {
         auto& point = X->at(i);
 
