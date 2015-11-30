@@ -75,8 +75,19 @@ pclbo::MeshGeoHeat::getDistancesFrom(const int x) {
 
     Eigen::VectorXd phi = solver->solve(div);
 
-    phi = phi.array() - phi.minCoeff();
-
     // Convert the distances to a std::vector
-    return std::vector<double>(phi.data(), phi.data() + phi.size());
+    std::vector<double> dist(phi.data(), phi.data() + phi.size());
+
+    // Find the minimum not nan number
+    double minimum = std::numeric_limits<double>::infinity();
+    for (const auto& v : dist) {
+        if (!isnan(v) && v < minimum) {
+            minimum = v;
+        }
+    }
+
+    // Shift the values so the minimum is 0
+    for (auto& v : dist) { v -= minimum; }
+
+    return dist;
 }

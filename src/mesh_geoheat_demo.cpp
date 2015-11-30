@@ -101,7 +101,13 @@ void geo_callback (const pcl::visualization::PointPickingEvent& event, void* arg
     std::vector<double> distances = data->mgh->getDistancesFrom(point_index);
 
     // Display
-    double maximum = *std::max_element(distances.begin(), distances.end());
+    double maximum = -1 * std::numeric_limits<double>::infinity();
+    for (const auto& v : distances) {
+        if (!isnan(v) && v > maximum) {
+            maximum = v;
+        }
+    }
+
     pcl::PointCloud<pcl::PointXYZRGB>::Ptr color_cloud(new pcl::PointCloud<pcl::PointXYZRGB>());
     color_cloud->points.resize(data->cloud->size());
     
@@ -178,7 +184,13 @@ int main(int argc, char *argv[]) {
 
     pcl::PointCloud<pcl::PointXYZRGB>::Ptr color_cloud(new pcl::PointCloud<pcl::PointXYZRGB>());
     color_cloud->points.resize(cloud->size());
-    double maximum = *std::max_element(distances.begin(), distances.end());
+
+    double maximum = -std::numeric_limits<double>::infinity();
+    for (const auto& v : distances) {
+        if (!isnan(v) && v > maximum) {
+            maximum = v;
+        }
+    }
     
     for (int i = 0; i < cloud->size(); i++) {
       const auto& point = cloud->points.at(i);
