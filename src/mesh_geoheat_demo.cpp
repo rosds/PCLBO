@@ -4,6 +4,7 @@
 
 #include <pcl/io/vtk_lib_io.h>
 #include <pcl/visualization/pcl_visualizer.h>
+#include <pcl/surface/vtk_smoothing/vtk_mesh_quadric_decimation.h>
 
 #include <boost/program_options.hpp>
 #include <boost/filesystem.hpp>
@@ -141,7 +142,8 @@ int main(int argc, char *argv[]) {
     po::options_description desc;
     desc.add_options()
         ("help", "Show help message")
-        ("show", "Show the tessellation")
+        ("downsample,d", po::value<double>(), "Downsample rate.")
+        ("time-step,t", po::value<double>(), "Time step for heat diffusion.")
         ("model,m", po::value<std::string>()->required(), "Model cloud");
     po::variables_map vm;
 
@@ -164,6 +166,17 @@ int main(int argc, char *argv[]) {
     pcl::io::loadPolygonFile(input_file.string(), *triangles);
     std::cout << "done" << std::endl;
 
+    // Downsample the cloud if necessary
+    if (vm.count("downsample")) {
+      pcl::PolygonMesh::Ptr output(new pcl::PolygonMesh());
+      double rate = vm["downsample"].as<double>();
+      pcl::MeshQuadricDecimationVTK mqd;
+      mqd.setInputMesh(triangles);
+      mqd.setTargetReductionFactor(rate);
+      mqd.process(*output);
+      triangles = output;
+    }
+
     pcl::fromPCLPointCloud2<pcl::PointXYZ>(triangles->cloud, *cloud);
 
 
@@ -173,6 +186,11 @@ int main(int argc, char *argv[]) {
 
     int x = 500;
     pclbo::MeshGeoHeat::Ptr mgh(new pclbo::MeshGeoHeat());
+
+    if (vm.count("time-step")) {
+      mgh->setTimeStep(vm["time-step"].as<double>());
+    }
+
     mgh->setInputMesh(triangles);
     mgh->compute();
     std::vector<double> distances = mgh->getDistancesFrom(x);
@@ -185,7 +203,7 @@ int main(int argc, char *argv[]) {
     pcl::PointCloud<pcl::PointXYZRGB>::Ptr color_cloud(new pcl::PointCloud<pcl::PointXYZRGB>());
     color_cloud->points.resize(cloud->size());
 
-    double maximum = -std::numeric_limits<double>::infinity();
+    double maximum = -1 * std::numeric_limits<double>::infinity();
     for (const auto& v : distances) {
         if (!isnan(v) && v > maximum) {
             maximum = v;

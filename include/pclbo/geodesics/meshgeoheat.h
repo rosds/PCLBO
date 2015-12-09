@@ -16,33 +16,48 @@ namespace pclbo {
 /** \brief Compute geodesic distances on a mesh.
  */
 class MeshGeoHeat {
-    public:
-        typedef std::shared_ptr<MeshGeoHeat> Ptr;
+  public:
+    typedef std::shared_ptr<MeshGeoHeat> Ptr;
 
-        /** \brief Empty constructor. */
-        MeshGeoHeat () : input_mesh_() {}
+    /** \brief Empty constructor. */
+    MeshGeoHeat () : input_mesh_(nullptr), time_step(-1.0) {}
 
-        /** \brief Empty destructor. */
-        virtual ~MeshGeoHeat () {}
+    /** \brief Empty destructor. */
+    virtual ~MeshGeoHeat() {}
 
-        inline void
-        setInputMesh (const pcl::PolygonMeshConstPtr &input)
-        { input_mesh_ = input; }
+    /** \brief Set input mesh.
+     *  \param[in] input Input mesh.
+     */
+    inline void setInputMesh(const pcl::PolygonMeshConstPtr &input) { 
+      input_mesh_ = input; 
+    }
 
-        void compute () {
-            lbo.setInputMesh(input_mesh_);
-            lbo.compute();
-        }
+    /** \brief Set time step for heat diffusion.
+     *  \param[in] ts Time step.
+     */
+    inline void setTimeStep(const double ts) {
+      time_step = ts;
+    }
 
-        /** \brief Compute the distances from the provided point. */
-        std::vector<double> getDistancesFrom(const int x);
+    /** \brief Compute and store the Laplace-Beltrami operator. **/
+    void compute () {
+      lbo.setInputMesh(input_mesh_);
+      lbo.compute();
+    }
 
-    private:
+    /** \brief Compute the distances from the provided point. */
+    std::vector<double> getDistancesFrom(const int x);
 
-        /** \brief Input polygonal mesh. */
-        pcl::PolygonMeshConstPtr input_mesh_;
+  private:
 
-        pclbo::MeshLBOEstimation lbo;
+    /** \brief Time step for heat diffusion. **/
+    double time_step;
+
+    /** \brief Input polygonal mesh. */
+    pcl::PolygonMeshConstPtr input_mesh_;
+
+    pclbo::MeshLBOEstimation lbo;
+
 }; // class MeshGeoHeat
 
 } // namespace pclbo

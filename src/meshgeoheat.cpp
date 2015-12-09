@@ -12,7 +12,13 @@ pclbo::MeshGeoHeat::getDistancesFrom(const int x) {
     // Number of faces.
     const size_t F = input_mesh_->polygons.size();
 
-    const double dt = sqrt(lbo.avg_edge_length);
+    double dt;
+
+    if (time_step < 0.0) {
+      dt = sqrt(lbo.avg_edge_length);
+    } else {
+      dt = time_step;
+    }
 
     // Compute the heat signature
     Eigen::SparseMatrix<double> A = lbo.M + dt * lbo.L;
