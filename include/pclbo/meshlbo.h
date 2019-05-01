@@ -2,6 +2,7 @@
 #define PC_LBO_MESH_HH
 
 #include <vector>
+#include <numeric>
 
 #include <Eigen/Sparse>
 #include <pcl/common/common_headers.h>
