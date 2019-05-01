@@ -1,44 +1,43 @@
-cmake_minimum_required (VERSION 2.8)
+cmake_minimum_required (VERSION 3.5)
+project (pcl_lbo LANGUAGES CXX)
 
-set (CMAKE_BUILD_TYPE Release)
+set (CMAKE_CXX_STANDARD 14)
+list (APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
-project (pcl_lbo)
-
-##############################################################################
-# Required packages                                                          #
-##############################################################################
-
-# To handle the point clouds, compute normals and KdTree
 find_package (PCL REQUIRED)
-include_directories (${PCL_INCLUDE_DIRS})
-link_directories (${PCL_LIBRARY_DIRS})
-
-# Depending on the installation the package name might be Eigen3
 find_package (Eigen3 REQUIRED)
-include_directories (${Eigen3_INCLUDE_DIRS})
-
-# CGAL Library used only to compute the Voronoi diagram
 find_package (CGAL REQUIRED)
-include_directories (${CGAL_INCLUDE_DIRS})
+find_package (Boost REQUIRED COMPONENTS program_options filesystem)
+find_package (SuiteSparse REQUIRED)
 
-find_package (Boost COMPONENTS program_options filesystem REQUIRED)
-include_directories (${Boost_INCLUDE_DIRS})
+add_library (PCL::PCL INTERFACE IMPORTED)
+target_link_libraries (PCL::PCL INTERFACE ${PCL_LIBRARIES})
+target_include_directories (PCL::PCL INTERFACE ${PCL_INCLUDE_DIRS})
 
-##############################################################################
-# C++11 support required                                                     #
-##############################################################################
+add_library (SuiteSparse::Cholmod INTERFACE IMPORTED)
+target_link_libraries (SuiteSparse::Cholmod INTERFACE ${SuiteSparse_CHOLMOD_LIBRARY})
+target_include_directories (SuiteSparse::Cholmod INTERFACE ${SuiteSparse_CHOLMOD_INCLUDE_DIR})
 
-include_directories (include)
-add_definitions (-std=c++0x ${CGAL_CXX_FLAGS_INIT})
-
-##############################################################################
-# Compile the library                                                        #
-##############################################################################
-
-set (lbo_src 
+add_library (pclbo
+    "include/heat/heat.h"
+    "include/heat/impl/heat.hpp"
+    "include/pclbo/geodesics/meshgeoheat.h"
+    "include/pclbo/meshlbo.h"
+    "include/pclbo/pclbo.h"
+    "include/pclbo/utils.h"
+    "include/pclbo/voronoi_diagram.h"
+    "include/pclbo/impl/pclbo.hpp"
     "src/meshlbo.cpp"
     "src/meshgeoheat.cpp")
-add_library (pclbo SHARED ${lbo_src})
+
+target_include_directories (pclbo PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include")
+target_link_libraries (pclbo
+    PUBLIC
+        PCL::PCL
+    PRIVATE
+        CGAL::CGAL
+        Eigen3::Eigen
+        SuiteSparse::Cholmod)
 
 install (TARGETS pclbo DESTINATION lib)
 install (DIRECTORY include/pclbo DESTINATION include)
@@ -49,19 +48,16 @@ install (DIRECTORY include/pclbo DESTINATION include)
 
 add_executable (visualize_eigenfunctions EXCLUDE_FROM_ALL src/eigenfunctions_demo.cpp)
 target_link_libraries (visualize_eigenfunctions 
-    ${Boost_LIBRARIES}  
-    ${CGAL_LIBRARY} 
-    ${CGAL_3RD_PARTY_LIBRARIES} 
-    ${PCL_LIBRARIES} 
-    ${Eigen3_LIBRARIES})
+  PRIVATE
+    pclbo
+    Boost::program_options
+    Boost::filesystem)
 
 add_executable (heat EXCLUDE_FROM_ALL src/heat_demo.cpp)
 target_link_libraries (heat 
-    ${Boost_LIBRARIES}  
-    ${CGAL_LIBRARY} 
-    ${CGAL_3RD_PARTY_LIBRARIES} 
-    ${PCL_LIBRARIES} 
-    ${Eigen3_LIBRARIES})
+  PRIVATE
+    pclbo)
+
 
 #add_executable (geoheat src/geoheat_demo.cpp)
 #target_link_libraries (geoheat 
@@ -72,11 +68,9 @@ target_link_libraries (heat
     #${Eigen3_LIBRARIES})
 
 
-include_directories ("/usr/include/suitesparse")
 add_executable (mesh_geoheat EXCLUDE_FROM_ALL src/mesh_geoheat_demo.cpp)
 target_link_libraries (mesh_geoheat 
+  PRIVATE
     pclbo
-    cholmod
-    ${Boost_LIBRARIES}  
-    ${PCL_LIBRARIES} 
-    ${Eigen3_LIBRARIES})
+    Boost::program_options
+    Boost::filesystem)
