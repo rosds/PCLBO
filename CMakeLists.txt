@@ -71,8 +71,11 @@ target_link_libraries (heat
 
 
 add_executable (mesh_geoheat EXCLUDE_FROM_ALL src/mesh_geoheat_demo.cpp)
-target_link_libraries (mesh_geoheat 
+target_include_directories (mesh_geoheat PUBLIC ${SuiteSparse_INCLUDE_DIRS})
+target_link_libraries (mesh_geoheat
   PRIVATE
     pclbo
     Boost::program_options
-    Boost::filesystem)
+    Boost::filesystem
+    cholmod
+        )
