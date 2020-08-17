@@ -7,7 +7,7 @@ list (APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 find_package (PCL REQUIRED)
 find_package (Eigen3 REQUIRED)
 find_package (CGAL REQUIRED)
-find_package (Boost REQUIRED COMPONENTS program_options filesystem)
+find_package (Boost REQUIRED COMPONENTS program_options filesystem thread)
 find_package (SuiteSparse REQUIRED)
 
 add_library (PCL::PCL INTERFACE IMPORTED)
@@ -35,6 +35,8 @@ target_link_libraries (pclbo
     PUBLIC
         PCL::PCL
     PRIVATE
+        pthread
+        Boost::thread
         CGAL::CGAL
         Eigen3::Eigen
         SuiteSparse::Cholmod)

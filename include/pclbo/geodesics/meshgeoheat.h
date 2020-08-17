@@ -8,7 +8,6 @@
 #include <pcl/common/common_headers.h>
 #include <pcl/PolygonMesh.h>
 #include <pcl/conversions.h>
-
 #include <pclbo/meshlbo.h>
 
 namespace pclbo {

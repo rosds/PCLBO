@@ -2,6 +2,7 @@
 #define PC_LBO_DIFFUSION_HH
 
 #include <cmath>
+#include <boost/thread/thread.hpp>
 #include <Eigen/Eigen>
 
 #include <pcl/common/geometry.h>
