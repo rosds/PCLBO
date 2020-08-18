@@ -2,7 +2,6 @@ cmake_minimum_required (VERSION 3.5)
 project (pcl_lbo LANGUAGES CXX)
 
 set (CMAKE_CXX_STANDARD 14)
-list (APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 find_package (PCL REQUIRED)
 find_package (Eigen3 REQUIRED)
