@@ -1,13 +1,13 @@
 #ifndef PC_LBO_MESH_HH
 #define PC_LBO_MESH_HH
 
-#include <numeric>
-#include <vector>
-
-#include <Eigen/Sparse>
 #include <pcl/PolygonMesh.h>
 #include <pcl/common/common_headers.h>
 #include <pcl/conversions.h>
+
+#include <Eigen/Sparse>
+#include <numeric>
+#include <vector>
 
 namespace pclbo {
 
@@ -15,7 +15,7 @@ namespace pclbo {
  *  This class computes the Laplace-Beltrami Operator from an input mesh.
  */
 class MeshLBOEstimation {
-public:
+ public:
   /** \brief Empty constructor. */
   MeshLBOEstimation() : input_mesh_(), area(new std::vector<double>()) {}
 
@@ -47,8 +47,8 @@ public:
   /** \brief faces area. */
   std::shared_ptr<std::vector<double>> area;
 
-}; // class MeshLBOEstimation
+};  // class MeshLBOEstimation
 
-} // namespace pclbo
+}  // namespace pclbo
 
-#endif // PC_LBO_MESH_HH
+#endif  // PC_LBO_MESH_HH

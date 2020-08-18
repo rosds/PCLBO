@@ -2,7 +2,6 @@
 
 template <class PointT, class NormalT>
 void pclbo::LBOEstimation<PointT, NormalT>::compute() {
-
   typename pcl::KdTreeFLANN<PointT>::Ptr kdt(new pcl::KdTreeFLANN<PointT>());
   kdt->setInputCloud(_cloud);
 
@@ -25,8 +24,7 @@ void pclbo::LBOEstimation<PointT, NormalT>::compute() {
     const auto &normal_vector =
         normal.getNormalVector3fMap().template cast<double>();
 
-    if (!pcl::isFinite(point))
-      continue;
+    if (!pcl::isFinite(point)) continue;
 
     std::vector<int> indices;
     std::vector<float> distances;
@@ -62,7 +60,6 @@ void pclbo::LBOEstimation<PointT, NormalT>::compute() {
 
     // Add the rest of the points
     for (const auto &projected : projected_points) {
-
       double x = projected.dot(u);
       double y = projected.dot(v);
 
@@ -73,7 +70,7 @@ void pclbo::LBOEstimation<PointT, NormalT>::compute() {
     assert(plane.size() >= 4);
 
     // Compute the voronoi cell area of the point
-    double area = VoronoiDiagram::area(plane);
+    double area = computeVoronoiCenterCellArea(plane);
     B[i] = area;
     avg_mass += area;
     points_with_mass++;
@@ -100,8 +97,7 @@ void pclbo::LBOEstimation<PointT, NormalT>::compute() {
   for (int i = 0; i < _cloud->size(); i++) {
     const auto &point = _cloud->at(i);
 
-    if (!pcl::isFinite(point))
-      continue;
+    if (!pcl::isFinite(point)) continue;
 
     std::vector<int> indices;
     std::vector<float> distances;

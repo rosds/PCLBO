@@ -19,16 +19,9 @@ target_link_libraries (SuiteSparse::Cholmod INTERFACE ${SuiteSparse_CHOLMOD_LIBR
 target_include_directories (SuiteSparse::Cholmod INTERFACE ${SuiteSparse_CHOLMOD_INCLUDE_DIR})
 
 add_library (pclbo
-    "include/heat/heat.h"
-    "include/heat/impl/heat.hpp"
-    "include/pclbo/geodesics/meshgeoheat.h"
-    "include/pclbo/meshlbo.h"
-    "include/pclbo/pclbo.h"
-    "include/pclbo/utils.h"
-    "include/pclbo/voronoi_diagram.h"
-    "include/pclbo/impl/pclbo.hpp"
     "src/meshlbo.cpp"
-    "src/meshgeoheat.cpp")
+    "src/meshgeoheat.cpp"
+    "src/voronoi_diagram.cpp")
 
 target_include_directories (pclbo PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include")
 target_link_libraries (pclbo
