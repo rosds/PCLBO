@@ -1,10 +1,11 @@
-#include <algorithm>
-#include <iostream>
-
 #include <pcl/features/normal_3d.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/kdtree/kdtree_flann.h>
 #include <pcl/visualization/pcl_visualizer.h>
+
+#include <algorithm>
+#include <iostream>
+#include <thread>
 
 // Laplace-Beltrami Operator
 #include <pclbo/pclbo.h>
@@ -25,31 +26,31 @@ float shortRainbowColorMap(const float value, const float min,
   int Y = static_cast<int>(floorf(255.0f * (a - X)));
 
   switch (X) {
-  case 0:
-    r = 255;
-    g = Y;
-    b = 0;
-    break;
-  case 1:
-    r = 255 - Y;
-    g = 255;
-    b = 0;
-    break;
-  case 2:
-    r = 0;
-    g = 255;
-    b = Y;
-    break;
-  case 3:
-    r = 0;
-    g = 255 - Y;
-    b = 255;
-    break;
-  case 4:
-    r = 0;
-    g = 0;
-    b = 255;
-    break;
+    case 0:
+      r = 255;
+      g = Y;
+      b = 0;
+      break;
+    case 1:
+      r = 255 - Y;
+      g = 255;
+      b = 0;
+      break;
+    case 2:
+      r = 0;
+      g = 255;
+      b = Y;
+      break;
+    case 3:
+      r = 0;
+      g = 255 - Y;
+      b = 255;
+      break;
+    case 4:
+      r = 0;
+      g = 0;
+      b = 255;
+      break;
   }
 
   uint32_t rgb = ((uint32_t)r << 16 | (uint32_t)g << 8 | (uint32_t)b);
@@ -57,7 +58,6 @@ float shortRainbowColorMap(const float value, const float min,
 }
 
 int main(int argc, char *argv[]) {
-
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
   pcl::PointCloud<pcl::Normal>::Ptr normals(new pcl::PointCloud<pcl::Normal>);
 
@@ -104,11 +104,10 @@ int main(int argc, char *argv[]) {
   pcl::PointCloud<pcl::PointXYZRGB>::Ptr colored_cloud(
       new pcl::PointCloud<pcl::PointXYZRGB>());
 
-  const int x = 1591;            // Some vertex id
-  const double t_step = 3.53917; // time step
+  const int x = 1591;             // Some vertex id
+  const double t_step = 3.53917;  // time step
 
   for (double t = t_step; true; t += t_step) {
-
     auto hs = hks->compute(x, t);
 
     auto range = std::minmax_element(hs->begin(), hs->end());
@@ -137,7 +136,7 @@ int main(int argc, char *argv[]) {
     viewer->addPointCloud<pcl::PointXYZRGB>(colored_cloud, mass_color, "Scene");
 
     viewer->spinOnce(100);
-    boost::this_thread::sleep(boost::posix_time::microseconds(100000));
+    std::this_thread::sleep_for(std::chrono::microseconds(100000));
   }
 
   return 0;

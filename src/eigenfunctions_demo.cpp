@@ -1,12 +1,12 @@
-#include <algorithm>
-#include <iostream>
-
 #include <pcl/features/normal_3d.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/kdtree/kdtree_flann.h>
 #include <pcl/visualization/pcl_visualizer.h>
-
 #include <pclbo/pclbo.h>
+
+#include <algorithm>
+#include <iostream>
+#include <thread>
 
 float shortRainbowColorMap(const float value, const float min,
                            const float max) {
@@ -20,31 +20,31 @@ float shortRainbowColorMap(const float value, const float min,
   int Y = static_cast<int>(floorf(255.0f * (a - X)));
 
   switch (X) {
-  case 0:
-    r = 255;
-    g = Y;
-    b = 0;
-    break;
-  case 1:
-    r = 255 - Y;
-    g = 255;
-    b = 0;
-    break;
-  case 2:
-    r = 0;
-    g = 255;
-    b = Y;
-    break;
-  case 3:
-    r = 0;
-    g = 255 - Y;
-    b = 255;
-    break;
-  case 4:
-    r = 0;
-    g = 0;
-    b = 255;
-    break;
+    case 0:
+      r = 255;
+      g = Y;
+      b = 0;
+      break;
+    case 1:
+      r = 255 - Y;
+      g = 255;
+      b = 0;
+      break;
+    case 2:
+      r = 0;
+      g = 255;
+      b = Y;
+      break;
+    case 3:
+      r = 0;
+      g = 255 - Y;
+      b = 255;
+      break;
+    case 4:
+      r = 0;
+      g = 0;
+      b = 255;
+      break;
   }
 
   uint32_t rgb = ((uint32_t)r << 16 | (uint32_t)g << 8 | (uint32_t)b);
@@ -52,7 +52,6 @@ float shortRainbowColorMap(const float value, const float min,
 }
 
 int main(int argc, char *argv[]) {
-
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);
   pcl::PointCloud<pcl::Normal>::Ptr normals(new pcl::PointCloud<pcl::Normal>);
 
@@ -92,7 +91,6 @@ int main(int argc, char *argv[]) {
       new pcl::PointCloud<pcl::PointXYZRGB>());
 
   for (int f = 0; f < lbo->eigenvalues.size(); f++) {
-
     Eigen::VectorXd v = lbo->eigenfunctions.col(f);
 
     // Search for the minimum and maximum curvature
@@ -122,7 +120,7 @@ int main(int argc, char *argv[]) {
 
     while (!viewer->wasStopped()) {
       viewer->spinOnce(100);
-      boost::this_thread::sleep(boost::posix_time::microseconds(100000));
+      std::this_thread::sleep_for(std::chrono::microseconds(100000));
     }
     viewer->resetStoppedFlag();
   }
