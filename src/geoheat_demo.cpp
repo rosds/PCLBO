@@ -15,48 +15,7 @@
 // HeatKernelSignature
 #include <heat/heat.h>
 
-float shortRainbowColorMap(const float value, const float min,
-                           const float max) {
-  uint8_t r, g, b;
-
-  // Normalize value to [0, 1]
-  float value_normalized = (value - min) / (max - min);
-
-  float a = (1.0f - value_normalized) / 0.25f;
-  int X = static_cast<int>(floorf(a));
-  int Y = static_cast<int>(floorf(255.0f * (a - X)));
-
-  switch (X) {
-    case 0:
-      r = 255;
-      g = Y;
-      b = 0;
-      break;
-    case 1:
-      r = 255 - Y;
-      g = 255;
-      b = 0;
-      break;
-    case 2:
-      r = 0;
-      g = 255;
-      b = Y;
-      break;
-    case 3:
-      r = 0;
-      g = 255 - Y;
-      b = 255;
-      break;
-    case 4:
-      r = 0;
-      g = 0;
-      b = 255;
-      break;
-  }
-
-  uint32_t rgb = ((uint32_t)r << 16 | (uint32_t)g << 8 | (uint32_t)b);
-  return *reinterpret_cast<float *>(&rgb);
-}
+#include "short_rainbow_color_map.h"
 
 int main(int argc, char *argv[]) {
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(new pcl::PointCloud<pcl::PointXYZ>);

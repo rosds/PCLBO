@@ -1,7 +1,9 @@
 #include <pclbo/geodesics/meshgeoheat.h>
 
-std::vector<double> pclbo::MeshGeoHeat::getDistancesFrom(const int x) {
+#include <Eigen/CholmodSupport>
+#include <Eigen/Sparse>
 
+std::vector<double> pclbo::MeshGeoHeat::getDistancesFrom(const int x) {
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud(
       new pcl::PointCloud<pcl::PointXYZ>());
   pcl::fromPCLPointCloud2<pcl::PointXYZ>(input_mesh_->cloud, *cloud);

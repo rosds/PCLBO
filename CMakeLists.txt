@@ -7,15 +7,17 @@ find_package (PCL REQUIRED)
 find_package (Eigen3 REQUIRED)
 find_package (CGAL REQUIRED)
 find_package (Boost REQUIRED COMPONENTS program_options filesystem)
-find_package (SuiteSparse REQUIRED)
+find_package (SuiteSparse REQUIRED COMPONENTS CHOLMOD)
 
 add_library (PCL::PCL INTERFACE IMPORTED)
 target_link_libraries (PCL::PCL INTERFACE ${PCL_LIBRARIES})
 target_include_directories (PCL::PCL INTERFACE ${PCL_INCLUDE_DIRS})
 
 add_library (SuiteSparse::Cholmod INTERFACE IMPORTED)
-target_link_libraries (SuiteSparse::Cholmod INTERFACE ${SuiteSparse_CHOLMOD_LIBRARY})
-target_include_directories (SuiteSparse::Cholmod INTERFACE ${SuiteSparse_CHOLMOD_INCLUDE_DIR})
+target_link_libraries (SuiteSparse::Cholmod INTERFACE ${SuiteSparse_CHOLMOD_LIBRARY_RELEASE})
+target_include_directories (SuiteSparse::Cholmod INTERFACE ${SuiteSparse_INCLUDE_DIRS})
+
+message("VERGA ${SuiteSparse_CHOLMOD_LIBRARY}")
 
 add_library (pclbo
     "src/meshlbo.cpp"
@@ -51,8 +53,9 @@ target_link_libraries (heat
     pclbo)
 
 
-add_executable (geoheat src/geoheat_demo.cpp)
+add_executable (geoheat EXCLUDE_FROM_ALL src/geoheat_demo.cpp)
 target_link_libraries (geoheat 
+  PRIVATE
     pclbo
     ${CGAL_LIBRARY} 
     ${CGAL_3RD_PARTY_LIBRARIES} 
