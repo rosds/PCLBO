@@ -9,6 +9,7 @@ used as part of the [Point Cloud Library](http://pointclouds.org/).
 + Point Cloud Library (>= 1.7)
 + Eigen library 3.0
 + CGAL 3.9
++ SuiteSparse 2.0
 
 ### Demos
 

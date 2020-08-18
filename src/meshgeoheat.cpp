@@ -87,7 +87,7 @@ pclbo::MeshGeoHeat::getDistancesFrom(const int x) {
     // Find the minimum not nan number
     double minimum = std::numeric_limits<double>::infinity();
     for (const auto& v : dist) {
-        if (!isnan(v) && v < minimum) {
+        if (!std::isnan(v) && v < minimum) {
             minimum = v;
         }
     }
