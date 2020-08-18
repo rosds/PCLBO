@@ -59,13 +59,13 @@ target_link_libraries (heat
     pclbo)
 
 
-#add_executable (geoheat src/geoheat_demo.cpp)
-#target_link_libraries (geoheat 
-    #${Boost_LIBRARIES}  
-    #${CGAL_LIBRARY} 
-    #${CGAL_3RD_PARTY_LIBRARIES} 
-    #${PCL_LIBRARIES} 
-    #${Eigen3_LIBRARIES})
+add_executable (geoheat src/geoheat_demo.cpp)
+target_link_libraries (geoheat 
+    pclbo
+    ${CGAL_LIBRARY} 
+    ${CGAL_3RD_PARTY_LIBRARIES} 
+    ${PCL_LIBRARIES} 
+    ${Eigen3_LIBRARIES})
 
 
 add_executable (mesh_geoheat EXCLUDE_FROM_ALL src/mesh_geoheat_demo.cpp)
