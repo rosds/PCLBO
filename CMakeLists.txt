@@ -17,8 +17,6 @@ add_library (SuiteSparse::Cholmod INTERFACE IMPORTED)
 target_link_libraries (SuiteSparse::Cholmod INTERFACE ${SuiteSparse_CHOLMOD_LIBRARY_RELEASE})
 target_include_directories (SuiteSparse::Cholmod INTERFACE ${SuiteSparse_INCLUDE_DIRS})
 
-message("VERGA ${SuiteSparse_CHOLMOD_LIBRARY}")
-
 add_library (pclbo
     "src/meshlbo.cpp"
     "src/meshgeoheat.cpp"
@@ -52,16 +50,10 @@ target_link_libraries (heat
   PRIVATE
     pclbo)
 
-
 add_executable (geoheat EXCLUDE_FROM_ALL src/geoheat_demo.cpp)
 target_link_libraries (geoheat 
   PRIVATE
-    pclbo
-    ${CGAL_LIBRARY} 
-    ${CGAL_3RD_PARTY_LIBRARIES} 
-    ${PCL_LIBRARIES} 
-    ${Eigen3_LIBRARIES})
-
+    pclbo)
 
 add_executable (mesh_geoheat EXCLUDE_FROM_ALL src/mesh_geoheat_demo.cpp)
 target_link_libraries (mesh_geoheat 
